@@ -74,7 +74,6 @@ class Gambler:
         self.value_iteration()
         optimal_policy = self.calculate_optimal_policy()
 
-        print(optimal_policy)
         self.plot_sweeps()
         self.plot_optimal_policy(optimal_policy)
 
