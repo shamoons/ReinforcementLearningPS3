@@ -28,7 +28,8 @@ class Gambler:
                                           (1 - self.PROB_H) * self.state_values[state - action])
                 new_value = np.max(action_returns)
                 self.state_values[state] = new_value
-            if abs(self.state_values - prev_state_value).max() < 1e-6:
+
+            if abs(self.state_values - prev_state_value).max() < 1e-4:
                 self.sweeps.append(self.state_values)
                 is_converged = True
 
