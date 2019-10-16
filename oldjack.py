@@ -141,6 +141,7 @@ def figure_4_2(constant_returned_cars=True):
             old_value = value.copy()
             for i in range(MAX_CARS + 1):
                 for j in range(MAX_CARS + 1):
+                    # print('i', i, 'j', j)
                     new_state_value = expected_return([i, j], policy[i, j], value, constant_returned_cars)
                     value[i, j] = new_state_value
             max_value_change = abs(old_value - value).max()

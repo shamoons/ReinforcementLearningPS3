@@ -11,6 +11,8 @@ autopep8 = "*"
 numpy = "*"
 matplotlib = "*"
 seaborn = "*"
+scipy = "*"
+progressbar = "*"
 
 [requires]
 python_version = "3.6"
