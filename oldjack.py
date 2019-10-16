@@ -176,7 +176,7 @@ def figure_4_2(constant_returned_cars=True):
         print('Iterations', iterations)
         iterations += 1
 
-    plt.savefig('../images/figure_4_2.png')
+    plt.savefig('figure_4_2.png')
     plt.close()
 
 

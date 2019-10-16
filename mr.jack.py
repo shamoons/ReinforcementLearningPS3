@@ -2,7 +2,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from scipy.stats import poisson
 
 matplotlib.use('Agg')
 
@@ -14,41 +13,44 @@ class RentalAgency:
         self.GAMMA = gamma
         self.CAR_REVENUE = car_revenue
         self.MOVE_COST = move_cost
+        self.FIRST_LOCATION = {'requests': 3, 'returns': 3}
+        self.SECOND_LOCATION = {'requests': 4, 'returns': 2}
 
         self.value = np.zeros((self.MAX_CARS + 1, self.MAX_CARS + 1))
         self.policy = np.zeros(self.value.shape)
 
     def expected_return(self, state, action):
+        UPPER_BOUND = self.MAX_MOVE * 2 + 1
+
         returns = -self.MOVE_COST * abs(action)
 
         location_1_cars = int(min(state[0] - action, self.MAX_CARS))
         location_2_cars = int(min(state[1] + action, self.MAX_CARS))
 
         # go through all possible rental requests
-        for rental_request_first_loc in range(POISSON_UPPER_BOUND):
-            for rental_request_second_loc in range(POISSON_UPPER_BOUND):
-                # probability for current combination of rental requests
-                prob = poisson_probability(rental_request_first_loc, RENTAL_REQUEST_FIRST_LOC) * \
-                    poisson_probability(rental_request_second_loc, RENTAL_REQUEST_SECOND_LOC)
+        for rental_request_first_loc in range(UPPER_BOUND):
+            for rental_request_second_loc in range(UPPER_BOUND):
+                prob = np.random.poisson(rental_request_first_loc, self.FIRST_LOCATION['requests']) * np.random.poisson(
+                    rental_request_second_loc, self.SECOND_LOCATION['requests'])
 
                 num_of_cars_first_loc = location_1_cars
                 num_of_cars_second_loc = location_2_cars
 
-                # valid rental requests should be less than actual # of cars
                 valid_rental_first_loc = min(num_of_cars_first_loc, rental_request_first_loc)
                 valid_rental_second_loc = min(num_of_cars_second_loc, rental_request_second_loc)
 
                 # get credits for renting
-                reward = (valid_rental_first_loc + valid_rental_second_loc) * RENTAL_CREDIT
+                reward = (valid_rental_first_loc + valid_rental_second_loc) * self.CAR_REVENUE
                 num_of_cars_first_loc -= valid_rental_first_loc
                 num_of_cars_second_loc -= valid_rental_second_loc
 
-                for returned_cars_first_loc in range(POISSON_UPPER_BOUND):
-                    for returned_cars_second_loc in range(POISSON_UPPER_BOUND):
-                        prob_return = poisson_probability(
-                            returned_cars_first_loc, RETURNS_FIRST_LOC) * poisson_probability(returned_cars_second_loc, RETURNS_SECOND_LOC)
-                        num_of_cars_first_loc_ = min(num_of_cars_first_loc + returned_cars_first_loc, MAX_CARS)
-                        num_of_cars_second_loc_ = min(num_of_cars_second_loc + returned_cars_second_loc, MAX_CARS)
+                for returned_cars_first_loc in range(UPPER_BOUND):
+                    for returned_cars_second_loc in range(UPPER_BOUND):
+                        prob_return = np.random.poisson(returned_cars_first_loc, self.FIRST_LOCATION['returns']) * np.random.poisson(
+                            returned_cars_second_loc, self.SECOND_LOCATION['returns'])
+
+                        num_of_cars_first_loc_ = min(num_of_cars_first_loc + returned_cars_first_loc, self.MAX_CARS)
+                        num_of_cars_second_loc_ = min(num_of_cars_second_loc + returned_cars_second_loc, self.MAX_CARS)
                         prob_ = prob_return * prob
                         returns += prob_ * (reward + self.GAMMA *
                                             self.value[num_of_cars_first_loc_, num_of_cars_second_loc_])
